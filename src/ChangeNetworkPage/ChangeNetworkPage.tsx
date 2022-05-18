@@ -72,10 +72,11 @@ export const ChangeNetworkPage = () => {
               params: [network],
             });
           } catch (addError) {
-            setError((addError as any).message);
+            setError((addError as Error).message);
           }
+        } else {
+          setError((switchError as Error).message);
         }
-        setError((switchError as any).message);
       }
     }
   }, [ethereumProvider, network, setError]);
