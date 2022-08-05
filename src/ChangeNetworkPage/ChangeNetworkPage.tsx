@@ -20,10 +20,9 @@ interface IEthereumChain {
 const NETWORK_QUERY_PARAMETER = "network";
 const LOGO_QUERY_PARAMETER = "logo";
 const DEFAULT_LOGO_SRC = "https://www.ankr.com/_next/static/images/ankr-blue-logo-0a6dff66bd6e0c6659e5f6b7caec28f0.svg";
-const CHAIN_HAS_NOT_BEEN_ADDED_CODE = 4902;
 
 export const ChangeNetworkPage = () => {
-  const { search } = useLocation();
+  const {search} = useLocation();
   const [network, setNetwork] = useState<IEthereumChain>();
   const [ethereumProvider, setEthereumProvider] = useState<any>();
   const [error, setError] = useState<string>();
@@ -41,7 +40,7 @@ export const ChangeNetworkPage = () => {
   useEffect(() => {
     const query = new URLSearchParams(search);
     const networkJson = query.get(NETWORK_QUERY_PARAMETER);
-    if(networkJson) {
+    if (networkJson) {
       try {
         const network = JSON.parse(networkJson);
         setNetwork(network);
@@ -58,24 +57,20 @@ export const ChangeNetworkPage = () => {
   }, [search]);
 
   const changeNetwork = useCallback(async () => {
-    if(ethereumProvider && network) {
+    if (ethereumProvider && network) {
       try {
         await ethereumProvider.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: network.chainId }],
+          params: [{chainId: network.chainId}],
         });
       } catch (switchError) {
-        if ((switchError as any).code === CHAIN_HAS_NOT_BEEN_ADDED_CODE) {
-          try {
-            await ethereumProvider.request({
-              method: 'wallet_addEthereumChain',
-              params: [network],
-            });
-          } catch (addError) {
-            setError((addError as Error).message);
-          }
-        } else {
-          setError((switchError as Error).message);
+        try {
+          await ethereumProvider.request({
+            method: 'wallet_addEthereumChain',
+            params: [network],
+          });
+        } catch (addError) {
+          setError((addError as Error).message);
         }
       }
     }
